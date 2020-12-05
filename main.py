@@ -47,7 +47,7 @@ while True:
                 print(' ')
             else:
                 subprocess.run(f'del "archive\\{l}"', shell=True)
-        subprocess.run(f'move "archive\\{listfiles[randomNumber]}" ..', shell=True)
+        subprocess.run(f'move "archive\\{listfiles[randomNumber]}" .', shell=True)
         subprocess.run("rmdir archive", shell=True)
         print(f'\nSuccessfully Merged Files | Check the {listfiles[randomNumber]} Within the Archive Folder(ext RAR for Archive and JPG or ANY IMG FORMAT for Image)')
     else:
