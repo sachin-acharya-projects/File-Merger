@@ -5,8 +5,9 @@ __RUN GIVEN COMMAND IN COMMAND PROMPT WITHIN CONAINING DIRECTORIES__
 ````
 python main.py
 ````
-__IT WILL PROMPT AS SELECT IMAGES -> Choose files or Images you wanna hide __
-__AFTER THAT YOU WILL BE PROMPTED AS
+__IT WILL PROMPT AS SELECT IMAGES__ -> __Choose files or Images you wanna hide __
+__AFTER THAT YOU WILL BE PROMPTED AS__
+__
 Do you want to set Thumbnail Manually or want automatics?: (Y) yes, want manually (N) No, want automatic
 __
 _If you wanna set your thumbnails yourself i.e. choose in which image you want others to merge within hit **Y** otherwise Hit **N**_
