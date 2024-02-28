@@ -1,61 +1,64 @@
-import zipfile
-import subprocess
+from packages import create_archive, browse_files, browse_image, clean
+from colorama import Fore, init, Style
 import os
-from tkinter import filedialog
-import random
+import shutil
 
-os.system('cls')
-while True:
-    try:
-        os.mkdir('archive')
-    except:
-        print('')
 
-    print('SELECT IMAGES: ')
-    const = filedialog.askopenfilenames()
-    for i in const:
-        indfile = str(i)
-        indfile = indfile.replace('/', '\\')
-        subprocess.run(f'move "{indfile}" ".\\archive"', shell=True)
+init(autoreset=True)
+columns: int = os.get_terminal_size().columns
+string: str = f"{Fore.CYAN}{Style.BRIGHT}File Merger"
+print(f"\n{string:^{columns}}\n\n")
 
-    listfiles = os.listdir("archive")
-    if len(listfiles) != 0:
-        myzip = zipfile.ZipFile('archive.rar', 'w')
-        for j in listfiles:
-            myzip.write(f'archive\\{j}')
-        myzip.close()
-    else:
-        os.rmdir('archive')
-        break
-    askpermission = input('Do you want to set Thumbnail Manually or want automatics?: (Y) yes, want manually (N) No, want automatic\n').lower()
-    if askpermission == 'y':
-        for x in listfiles:
-            subprocess.run(f'del archive\\"{x}"', shell=True)
-        print('\nSELECT THUMNAIL YOU WANT\n')
-        askfile = str(filedialog.askopenfilename())
-        askfile = askfile.replace('/', '\\')
-        subprocess.run(f'copy /b "{askfile}" + ".\\archive.rar" "{askfile}"', shell=True)
-        print('\nSuccessfully Merged Files | Check the Thubnail Images (ext RAR for Archive and JPG or ANY IMG FORMAT for Image)')
-        subprocess.run('del archive.rar', shell=True)
-        subprocess.run('rmdir archive', shell=True)
-    elif askpermission == 'n':
-        randomNumber = random.randint(0, len(listfiles) - 1)
-        subprocess.run(f'copy /b "archive\\{listfiles[randomNumber]}" + ".\\archive.rar" "archive\\{listfiles[randomNumber]}"', shell=True)
-        subprocess.run('del archive.rar', shell=True)
-        for l in listfiles:
-            if l == listfiles[randomNumber]:
-                print(' ')
-            else:
-                subprocess.run(f'del "archive\\{l}"', shell=True)
-        subprocess.run(f'move "archive\\{listfiles[randomNumber]}" .', shell=True)
-        subprocess.run("rmdir archive", shell=True)
-        print(f'\nSuccessfully Merged Files | Check the {listfiles[randomNumber]} Within the Archive Folder(ext RAR for Archive and JPG or ANY IMG FORMAT for Image)')
-    else:
-        print('Error Occured: Wrong Command Line\nCheck Archive Folder for you files')
-        subprocess.run('del archive.rar', shell=True)
-    
-    askper = input('Wanna add more? (Y) Yes (N) No: ').lower()
-    if askper == 'y':
-        pass
-    else:
-        break
+def main() -> None:
+    while True:
+        #? Loop controlling
+        print(
+            f"{Fore.LIGHTGREEN_EX}Do you want to continue? {Fore.LIGHTCYAN_EX}(yes/{Style.BRIGHT}No) ",
+            end="",
+        )
+        if not input().lower() in ["y", "yes"]:
+            break
+
+        #? Selecting Files for archival
+        print(f"\n{Fore.LIGHTBLUE_EX}Select images for archiving", end="")
+        archive_folder, files, error_files = browse_files()
+
+        if not archive_folder:
+            print(f"{Fore.LIGHTRED_EX}\nUser didn't select any files.")
+            continue
+        print(f" → x{len(files)}")
+        if len(error_files) > 0:
+            print(f"{Fore.RED}{Style.BRIGHT}Following files are not added to the archive")
+            for file in error_files:
+                print(f"{Fore.LIGHTRED_EX}{file}")
+
+        if len(files) == 0:
+            print(f"{Fore.LIGHTRED_EX}No files to archive.")
+            continue
+
+        #? Creating archive
+        rar_archive_path, _ = create_archive(files)
+        
+        #? Selecting thumbnail
+        print(
+            f"{Fore.LIGHTBLUE_EX}Select thumbnail for the archive (None - Select automatically)", end=""
+        )
+        thumbnail = browse_image()
+        if not thumbnail:
+            thumbnail = files[0]
+        shutil.copy(thumbnail, ".")
+        thumbnail = os.path.basename(thumbnail)
+        print(f" → {thumbnail}")
+
+        #? Merging files
+        new_image = "_output".join(os.path.splitext(thumbnail))
+        with open(new_image, "wb") as output:
+            with open(os.path.join(".", thumbnail), "rb") as image:
+                with open(rar_archive_path, "rb") as file:
+                    output.write(image.read())
+                    output.write(file.read())
+        print(
+            f"{Fore.GREEN}{Style.BRIGHT}\nFiles merged successfully.\n{Fore.LIGHTGREEN_EX}{Style.NORMAL}\t{new_image}\n",
+            end="\n",
+        )
+        clean(archive_folder, rar_archive_path, thumbnail)

@@ -1,1 +1,0 @@
-python "D:\Merger 90\main.py"

@@ -1,0 +1,7 @@
+#? Testing Files
+*.jpg
+*.jpeg
+*.rar
+
+#? Python
+__pycache__
