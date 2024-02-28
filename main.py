@@ -13,7 +13,7 @@ def main() -> None:
     while True:
         #? Loop controlling
         print(
-            f"{Fore.LIGHTGREEN_EX}Do you want to continue? {Fore.LIGHTCYAN_EX}(yes/{Style.BRIGHT}No) ",
+            f"{Fore.LIGHTGREEN_EX}Do you want to continue? {Fore.LIGHTCYAN_EX}(yes/{Style.BRIGHT}No) → ",
             end="",
         )
         if not input().lower() in ["y", "yes"]:
@@ -45,7 +45,11 @@ def main() -> None:
         )
         thumbnail = browse_image()
         if not thumbnail:
-            thumbnail = files[0]
+            thumbnail = max(files, key=lambda x: x.endswith(".jpg"))
+            if not thumbnail.endswith(".jpg"):
+                print(f"{Fore.LIGHTRED_EX} → No thumbnail selected\n")
+                clean(archive_folder, rar_archive_path)
+                continue
         shutil.copy(thumbnail, ".")
         thumbnail = os.path.basename(thumbnail)
         print(f" → {thumbnail}")
@@ -62,3 +66,6 @@ def main() -> None:
             end="\n",
         )
         clean(archive_folder, rar_archive_path, thumbnail)
+
+if __name__ == "__main__":
+    main()

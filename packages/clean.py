@@ -4,7 +4,7 @@ import os
 __all__ = ["clean"]
 
 
-def clean(target_folder: str, archive_name: str, image: str) -> None | str:
+def clean(target_folder: str, archive_name: str, image: str | None = None) -> None | str:
     """Clean aftermath of the merging process
 
     Args:
@@ -18,7 +18,8 @@ def clean(target_folder: str, archive_name: str, image: str) -> None | str:
     try:
         shutil.rmtree(target_folder)
         os.remove(archive_name)
-        os.remove(image)
+        if image:
+            os.remove(image)
 
         return None
     except Exception as e:
